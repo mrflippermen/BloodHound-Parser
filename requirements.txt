@@ -1,0 +1,5 @@
+# No external dependencies required!
+# Pure Python implementation using standard library only
+
+# Optional: for enhanced features
+# pyyaml>=6.0.1
