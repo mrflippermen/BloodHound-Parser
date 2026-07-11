@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Esteban Jiménez
+Copyright (c) 2026 Esteban Jiménez (mrflippermen)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,31 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-LEGAL DISCLAIMER AND TERMS OF USE
-
-1. AUTHORIZED USE ONLY
-   This software is provided for authorized security testing, educational
-   purposes, and legitimate security research only. Any unauthorized use,
-   including but not limited to unauthorized access to computer systems,
-   is strictly prohibited and may be illegal.
-
-2. USER RESPONSIBILITY
-   Users are solely responsible for ensuring they have proper authorization
-   before using these tools against any systems. The author assumes no
-   liability for misuse or damage caused by this software.
-
-3. COMPLIANCE
-   Users must comply with all applicable local, state, national, and
-   international laws and regulations when using this software.
-
-4. NO WARRANTY
-   This software is provided "as is" without warranty of any kind. Use at
-   your own risk.
-
-5. EXPORT CONTROL
-   This software may contain cryptographic functionality subject to export
-   control regulations. Users are responsible for compliance with applicable
-   export control laws.

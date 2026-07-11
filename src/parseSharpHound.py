@@ -20,6 +20,7 @@ License: MIT
 
 import json
 import os
+import sys
 import argparse
 import re
 import logging
@@ -54,7 +55,7 @@ class ADStatistics:
     """Active Directory statistics."""
     total_users: int = 0
     total_groups: int = 0
-   total_computers: int = 0
+    total_computers: int = 0
     total_ous: int = 0
     total_gpos: int = 0
     enabled_users: int = 0

@@ -56,7 +56,7 @@ BloodHound provides the graph, but **BloodHound Parser extracts actionable intel
 ### Installation
 
 ```bash
-git clone https://github.com/yourusername/BloodHound-Parser.git
+git clone https://github.com/mrflippermen/BloodHound-Parser.git
 cd BloodHound-Parser
 pip install -r requirements.txt
 ```
@@ -186,7 +186,7 @@ BloodHound proporciona el grafo, pero **BloodHound Parser extrae inteligencia ac
 ### Instalación
 
 ```bash
-git clone https://github.com/yourusername/BloodHound-Parser.git
+git clone https://github.com/mrflippermen/BloodHound-Parser.git
 cd BloodHound-Parser
 pip install -r requirements.txt
 ```
