@@ -1050,7 +1050,7 @@ class OutputExporter:
         for obj_type, fname in ((ObjectType.USERS, "user_names_output.txt"),
                                 (ObjectType.COMPUTERS, "computer_names_output.txt")):
             names = parser.extract_names(obj_type)
-            (out / fname).write_text(sep.join(names))
+            (out / fname).write_text(sep.join(names), encoding="utf-8")
             logger.info("Exported %d names to %s", len(names), out / fname)
 
     @staticmethod
@@ -1123,7 +1123,7 @@ class OutputExporter:
                 lines.append(f"  - {g['name']}: {len(g['effective_members'])} member(s)")
             lines.append("")
         lines.append("=" * 62)
-        (out / "resumen.txt").write_text("\n".join(lines))
+        (out / "resumen.txt").write_text("\n".join(lines), encoding="utf-8")
         logger.info("Summary exported to %s", out / "resumen.txt")
 
     @staticmethod
@@ -1148,7 +1148,7 @@ class OutputExporter:
             },
             "findings": [f.to_dict() for f in parser.sorted_findings()],
         }
-        (out / "analysis.json").write_text(json.dumps(data, indent=2))
+        (out / "analysis.json").write_text(json.dumps(data, indent=2), encoding="utf-8")
         logger.info("JSON analysis exported to %s", out / "analysis.json")
 
     @staticmethod
@@ -1199,7 +1199,7 @@ class OutputExporter:
             lines += ["## Privileged groups", "", "| Group | Effective members |", "|---|---|"]
             for g in pg:
                 lines.append(f"| `{g['name']}` | {len(g['effective_members'])} |")
-        (out / "report.md").write_text("\n".join(lines))
+        (out / "report.md").write_text("\n".join(lines), encoding="utf-8")
         logger.info("Markdown report exported to %s", out / "report.md")
 
     @staticmethod
@@ -1291,14 +1291,14 @@ class OutputExporter:
             + script
             + "</body></html>"
         )
-        (out / "report.html").write_text(doc)
+        (out / "report.html").write_text(doc, encoding="utf-8")
         logger.info("HTML report exported to %s", out / "report.html")
 
     @staticmethod
     def export_cypher(parser: SharpHoundParser, out: Path) -> None:
         """Write a ready-to-paste Neo4j Cypher hunting pack for BloodHound CE."""
         queries = CYPHER_PACK.strip() + "\n"
-        (out / "hunting_queries.cypher").write_text(queries)
+        (out / "hunting_queries.cypher").write_text(queries, encoding="utf-8")
         logger.info("Cypher hunting pack exported to %s", out / "hunting_queries.cypher")
 
 
