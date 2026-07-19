@@ -8,7 +8,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from parseSharpHound import (  # noqa: E402
-    SharpHoundParser, OutputExporter, Severity, exploit_hint,
+    OutputExporter,
+    Severity,
+    SharpHoundParser,
+    exploit_hint,
 )
 
 SAMPLE = ROOT / "examples" / "sample_data"
