@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "ObjectIdentifier": "S-1-5-21-1111-2222-3333-512",
+      "Properties": {"name": "DOMAIN ADMINS@CORP.LOCAL", "highvalue": true, "admincount": true},
+      "Members": [
+        {"ObjectIdentifier": "S-1-5-21-1111-2222-3333-500", "ObjectType": "User"},
+        {"ObjectIdentifier": "S-1-5-21-1111-2222-3333-1150", "ObjectType": "Group"}
+      ],
+      "Aces": []
+    },
+    {
+      "ObjectIdentifier": "S-1-5-21-1111-2222-3333-1150",
+      "Properties": {"name": "IT-ADMINS@CORP.LOCAL"},
+      "Members": [
+        {"ObjectIdentifier": "S-1-5-21-1111-2222-3333-1106", "ObjectType": "User"}
+      ],
+      "Aces": []
+    },
+    {
+      "ObjectIdentifier": "S-1-5-21-1111-2222-3333-513",
+      "Properties": {"name": "DOMAIN USERS@CORP.LOCAL"},
+      "Members": [],
+      "Aces": []
+    }
+  ],
+  "meta": {"methods": 0, "type": "groups", "count": 3, "version": 5}
+}

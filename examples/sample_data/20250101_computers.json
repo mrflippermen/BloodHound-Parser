@@ -1,0 +1,50 @@
+{
+  "data": [
+    {
+      "ObjectIdentifier": "S-1-5-21-1111-2222-3333-1201",
+      "Properties": {
+        "name": "DC01.CORP.LOCAL",
+        "enabled": true,
+        "unconstraineddelegation": true,
+        "operatingsystem": "Windows Server 2019 Standard",
+        "highvalue": true,
+        "system_tags": "admin_tier_0"
+      },
+      "Aces": [],
+      "AllowedToAct": []
+    },
+    {
+      "ObjectIdentifier": "S-1-5-21-1111-2222-3333-1202",
+      "Properties": {
+        "name": "WS-LEGACY01.CORP.LOCAL",
+        "enabled": true,
+        "operatingsystem": "Windows 7 Professional",
+        "haslaps": false
+      },
+      "Aces": [
+        {
+          "PrincipalSID": "S-1-5-21-1111-2222-3333-1106",
+          "PrincipalType": "User",
+          "RightName": "GenericAll",
+          "IsInherited": false
+        }
+      ],
+      "AllowedToAct": []
+    },
+    {
+      "ObjectIdentifier": "S-1-5-21-1111-2222-3333-1203",
+      "Properties": {
+        "name": "APP01.CORP.LOCAL",
+        "enabled": true,
+        "operatingsystem": "Windows Server 2022 Standard",
+        "haslaps": true,
+        "allowedtodelegate": ["HOST/DC01.CORP.LOCAL"]
+      },
+      "Aces": [],
+      "AllowedToAct": [
+        {"ObjectIdentifier": "S-1-5-21-1111-2222-3333-1104", "ObjectType": "User"}
+      ]
+    }
+  ],
+  "meta": {"methods": 0, "type": "computers", "count": 3, "version": 5}
+}

@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "ObjectIdentifier": "TEMPLATE-ESC1-GUID",
+      "Properties": {
+        "name": "VULNWEBSERVER@CORP.LOCAL",
+        "enabled": true,
+        "requiresmanagerapproval": false,
+        "authorizedsignatures": 0,
+        "enrolleesuppliessubject": true,
+        "authenticationenabled": true,
+        "ekus": ["1.3.6.1.5.5.7.3.2"],
+        "schemaversion": 2
+      },
+      "Aces": [
+        {"PrincipalSID": "S-1-5-21-1111-2222-3333-513", "PrincipalType": "Group", "RightName": "Enroll"}
+      ]
+    }
+  ],
+  "meta": {"methods": 0, "type": "certtemplates", "count": 1, "version": 5}
+}

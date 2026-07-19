@@ -1,0 +1,18 @@
+{
+  "data": [
+    {
+      "ObjectIdentifier": "CA-GUID-001",
+      "Properties": {
+        "name": "CORP-CA@CORP.LOCAL",
+        "isuserspecifiessanenabled": true
+      },
+      "EnabledCertTemplates": [
+        {"ObjectIdentifier": "TEMPLATE-ESC1-GUID", "ObjectType": "CertTemplate"}
+      ],
+      "Aces": [
+        {"PrincipalSID": "S-1-5-21-1111-2222-3333-513", "PrincipalType": "Group", "RightName": "ManageCA"}
+      ]
+    }
+  ],
+  "meta": {"methods": 0, "type": "enterprisecas", "count": 1, "version": 5}
+}

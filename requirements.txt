@@ -1,5 +1,11 @@
-# No external dependencies required!
-# Pure Python implementation using standard library only
-
-# Optional: for enhanced features
-# pyyaml>=6.0.1
+# BloodHound Parser — runtime dependencies
+# =========================================
+# The parser uses ONLY the Python standard library (json, csv, zipfile,
+# argparse, dataclasses, ...), so there is nothing to install to run it:
+#
+#     python src/parseSharpHound.py <collection-dir-or-zip>
+#
+# Development / testing (optional):
+#     pip install pytest
+#
+# Python 3.8+ required.

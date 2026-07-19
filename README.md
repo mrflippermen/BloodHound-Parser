@@ -5,7 +5,6 @@
    ██╔══██╗██║     ██║   ██║██║   ██║██║  ██║██╔══██║██║   ██║██║   ██║██║╚██╗██║██║  ██║
    ██████╔╝███████╗╚██████╔╝╚██████╔╝██████╔╝██║  ██║╚██████╔╝╚██████╔╝██║ ╚████║██████╔╝
    ╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═════╝ 
-                                                                                           
                         ██████╗  █████╗ ██████╗ ███████╗███████╗██████╗                  
                         ██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔══██╗                 
                         ██████╔╝███████║██████╔╝███████╗█████╗  ██████╔╝                 
@@ -16,239 +15,203 @@
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![BloodHound](https://img.shields.io/badge/BloodHound-Compatible-red.svg)](https://github.com/BloodHoundAD/BloodHound)
+[![BloodHound CE](https://img.shields.io/badge/BloodHound-CE%20%2B%20Legacy-red.svg)](https://github.com/SpecterOps/BloodHound)
+[![Deps](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](#requirements)
+[![CI](https://github.com/mrflippermen/BloodHound-Parser/actions/workflows/ci.yml/badge.svg)](https://github.com/mrflippermen/BloodHound-Parser/actions/workflows/ci.yml)
 
-> **Advanced Active Directory enumeration analysis tool for BloodHound/SharpHound JSON collections.**
+> **Offline attack-path intelligence from BloodHound / SharpHound JSON — zero dependencies, one file.**
 
 ---
 
 ## 🇬🇧 English
 
-### Description
+### What it does
 
-**BloodHound Parser** is an enterprise-grade analysis tool for BloodHound/SharpHound JSON collections. It automatically identifies critical Active Directory misconfigurations and attack paths:
+BloodHound gives you the graph. **BloodHound Parser turns a raw collection into a ranked,
+report-ready list of what to attack first** — without spinning up Neo4j. Point it at a folder
+**or a `.zip`**, and it parses, correlates and scores the whole collection offline.
 
-- **Kerberoastable accounts** detection (SPN enumeration)
-- **ASREProastable users** identification (DONT_REQ_PREAUTH)
-- **Delegation analysis** (unconstrained/constrained delegation)
-- **High-value target** enumeration
-- **Privilege escalation paths** identification
-- **Multiple export formats** (JSON, CSV, Markdown, TXT)
-- **Risk scoring** and prioritization
-
-### Why This Tool?
-
-BloodHound provides the graph, but **BloodHound Parser extracts actionable intelligence**. Perfect for:
-- Quick triage during Active Directory assessments
-- Automated reporting generation
-- Prioritizing attack paths during time-limited engagements
-- Integration with other Red Team tools
+Supports **both** collection formats automatically:
+- **Legacy** SharpHound v1 (`version <= 4`)
+- **BloodHound Community Edition** / SharpHound v2 (`version >= 5`, `.zip` archives)
 
 ### Features
 
-✅ **Kerberoasting Detection**: Automatically finds service accounts with SPNs  
-✅ **ASREProast Identification**: Locates accounts without Kerberos pre-authentication  
-✅ **Delegation Issues**: Identifies unconstrained/constrained delegation risks  
-✅ **Admin Path Mapping**: Finds users with AdminCount attribute  
-✅ **Multi-format Export**: JSON, CSV, Markdown, plain text  
-✅ **Dataclass Architecture**: Type-safe, modern Python design  
+| Category | Detections |
+|---|---|
+| **Kerberos** | Kerberoastable (`hasspn`/SPN), ASREPRoastable (`dontreqpreauth`) |
+| **Delegation** | Unconstrained (user & computer), Constrained (`allowedToDelegate`), **RBCD** (`AllowedToAct`) |
+| **ACL abuse** | GenericAll, GenericWrite, WriteDacl, WriteOwner, Owns, **AddKeyCredentialLink (Shadow Creds)**, ForceChangePassword, AddMember, AllExtendedRights, ReadLAPSPassword, ReadGMSAPassword, DCSync (GetChanges/All) — **principals resolved SID→name** |
+| **ADCS** | ESC1, ESC2, ESC3, ESC4, ESC5, ESC6, ESC7, ESC8 (over `certtemplates`/`enterprisecas`), gated on templates actually published by a CA |
+| **Domain** | `ms-DS-MachineAccountQuota` > 0, legacy functional level, **trusts without SID filtering** |
+| **Hygiene** | PASSWD_NOTREQD, pwdneverexpires, stale accounts, **secrets in `description`/`info`**, **cleartext passwords in LDAP attrs** (`userpassword`/`unixpassword`/`unicodepassword`/`sfupassword`), **privileged-but-delegatable** accounts, SID history, end-of-life OS, missing LAPS, **krbtgt stale password**, **disabled-but-privileged**, **privileged Kerberoasting** (SPN + admincount) |
+| **Tiering** | High-value / `admin_tier_0` detection; ACEs against Tier-0 targets are auto-escalated |
+| **Membership** | **Recursive** effective-member resolution for privileged / Tier-0 groups |
+| **Attack graph** | Offline in-memory graph (MemberOf + ACEs + AdminTo + sessions + RBCD), **reverse-BFS shortest paths to Tier-0**, and **choke-point ranking** (which edges to cut first) — no Neo4j needed |
+| **Interactive graph** | The HTML report embeds a **BloodHound-style force-directed graph** of the attack chains (drag / zoom / pan, Tier-0 ringed in gold, edges labelled with the abused right) — self-contained, no external libraries |
+| **Exploit hints** | Each finding ships a **ready-to-adapt exploitation command** (impacket, Certipy, bloodyAD, netexec, Rubeus…) in every export |
+| **Scoring** | 0–100 risk score weighted by finding severity |
 
-### Installation
+### Exports
+
+`txt` · `json` · **`csv`** · `markdown` · **`html`** (styled report) · **`cypher`** (BloodHound CE hunting pack)
+
+### Install
 
 ```bash
 git clone https://github.com/mrflippermen/BloodHound-Parser.git
 cd BloodHound-Parser
-pip install -r requirements.txt
+# No pip install needed — pure standard library.
 ```
 
 ### Usage
 
-#### Basic Analysis
-
 ```bash
-# Parse all JSON files in BloodHound directory
-python src/parseSharpHound.py /path/to/bloodhound/data
+# Analyze a folder (all formats)
+python src/parseSharpHound.py /path/to/bloodhound/output
+
+# Read a .zip straight from SharpHound CE, write an HTML report
+python src/parseSharpHound.py collection.zip -f html -o ./report
+
+# CSV of findings only, custom stale window
+python src/parseSharpHound.py ./bh -f csv --stale-days 90
+
+# Just the Cypher hunting pack for BloodHound CE
+python src/parseSharpHound.py ./bh -f cypher
 ```
-
-#### Generate All Formats
-
-```bash
-# Export in all available formats
-python src/parseSharpHound.py /path/to/bloodhound -f all
-```
-
-#### Export for Integration
-
-```bash
-# JSON export for scripting
-python src/parseSharpHound.py /path/to/bloodhound -f json -o analysis.json
-
-# Markdown report for documentation
-python src/parseSharpHound.py /path/to/bloodhound -f markdown -o report.md
-```
-
-#### Custom Output Location
-
-```bash
-python src/parseSharpHound.py /path/to/bloodhound -o /custom/output/dir
-```
-
-### Command Reference
 
 ```
 positional arguments:
-  directory            Directory containing SharpHound JSON files
+  source                Directory OR .zip containing SharpHound JSON files
 
-optional arguments:
-  -o, --output PATH    Output directory (default: same as input)
-  -f, --format FORMAT  Export format: txt, json, markdown, all (default: all)
-  --output-format FMT  Text file format: column, comma (default: column)
-  -v, --verbose        Verbose output
+options:
+  -o, --output PATH     Output directory (default: alongside input)
+  -f, --format FMT      txt | json | csv | markdown | html | cypher | all  (default: all)
+  --output-format FMT   Name-list layout: column | comma  (default: column)
+  --stale-days N        Inactivity threshold for stale accounts (default: 180)
+  -v, --verbose         Debug logging
+  -V, --version         Show version
 ```
 
-### Sample Output
+### Sample output
 
-#### Console Output
 ```
-[INFO] Scanning directory: /data/bloodhound
-[INFO] Parsed 1234 users from 20241225_users.json
-[INFO] Analysis complete: 1234 users, 543 computers, 234 groups
-[INFO] Exported 1234 users to user_names_output.txt
-```
+==============================================================
+  BLOODHOUND COLLECTION SUMMARY
+  Format: BloodHound CE (v2+)   Risk score: 85/100
+==============================================================
+...
+TOP CRITICAL FINDINGS:
+  [CRITICAL] ACL: ForceChangePassword: HELPDESK@CORP.LOCAL -> ADMINISTRATOR@CORP.LOCAL
+  [CRITICAL] ACL: GenericAll: HELPDESK@CORP.LOCAL -> WS-LEGACY01.CORP.LOCAL
+  [CRITICAL] Unconstrained Delegation: DC01.CORP.LOCAL
 
-#### Summary Report (resumen.txt)
-```
-==========================================================
-SHARPHOUND COLLECTION SUMMARY
-==========================================================
-
-OBJECT COUNTS:
-  Users:      1234
-  Groups:     234
-  Computers:  543
-
-USER ANALYSIS:
-  Enabled:           1100
-  Privileged:        45
-  Kerberoastable:    12
-  ASREProastable:    3
-  High Value:        28
-
-KERBEROASTABLE USERS:
-  - sqlservice@corp.local
-  - webservice@corp.local
-  - svc_backup@corp.local
-
-ASREPROASTABLE USERS:
-  - testuser@corp.local
-  - legacyacct@corp.local
+PRIVILEGED GROUPS (effective members):
+  - DOMAIN ADMINS@CORP.LOCAL: 2 member(s)
 ```
 
-### Project Structure
+Try it now against the bundled synthetic dataset:
+
+```bash
+python src/parseSharpHound.py examples/sample_data -o /tmp/bh && cat /tmp/bh/resumen.txt
+```
+
+### Tests
+
+```bash
+python -m unittest discover -s tests -v      # 14 tests, stdlib only
+# or: pip install pytest && pytest -q
+```
+
+### Project structure
 
 ```
 BloodHound-Parser/
 ├── src/
-│   ├── parseSharpHound.py    # Main parser
+│   ├── parseSharpHound.py     # parser + analyzers + attack graph + exporters
 │   └── __init__.py
 ├── examples/
-│   ├── sample_output/
+│   ├── sample_data/           # synthetic CE collection (users/computers/groups/domains/ADCS)
 │   └── README.md
-├── requirements.txt
-├── .gitignore
-├── LICENSE
-└── README.md
+├── cypher/queries.cypher      # BloodHound CE hunting pack
+├── tests/test_parser.py       # 20 unit tests
+├── .github/workflows/ci.yml   # CI: ruff + mypy + tests (Linux/Windows, py3.8–3.12)
+├── pyproject.toml             # packaging + `bh-parse` console script + ruff/pytest config
+├── CHANGELOG.md · CONTRIBUTING.md · DISCLAIMER.md · LICENSE · README.md
 ```
+
+### How it compares
+
+| | This tool | PlumHound / GoodHound / AD-Miner |
+|---|---|---|
+| Needs a running Neo4j/BloodHound DB | **No** | Yes |
+| Reads `.zip` directly | **Yes** | — |
+| External dependencies | **None** | Several |
+| ACL edge SID→name resolution offline | **Yes** | via DB |
+
+It is **not** a graph engine — for full path-finding, load the collection into BloodHound
+CE and use the bundled `cypher/queries.cypher`. This tool is the fast triage layer.
 
 ---
 
 ## 🇪🇸 Español
 
-### Descripción
+### Qué hace
 
-**BloodHound Parser** es una herramienta de análisis de nivel enterprise para colecciones JSON de BloodHound/SharpHound. Identifica automáticamente configuraciones críticas de Active Directory y rutas de ataque:
+BloodHound te da el grafo. **BloodHound Parser convierte una colección en una lista
+priorizada y lista para reporte de qué atacar primero** — sin levantar Neo4j. Apúntalo a una
+carpeta **o a un `.zip`** y analiza, correlaciona y puntúa toda la colección en local.
 
-- **Detección de cuentas Kerberoastables** (enumeración de SPN)
-- **Identificación de usuarios ASREProastables** (DONT_REQ_PREAUTH)
-- **Análisis de delegación** (delegación sin restricciones/restringida)
-- **Enumeración de objetivos de alto valor**
-- **Identificación de rutas de escalación de privilegios**
-- **Múltiples formatos de exportación** (JSON, CSV, Markdown, TXT)
+Detecta automáticamente **ambos formatos**: SharpHound v1 (legacy) y BloodHound Community
+Edition / SharpHound v2 (`.zip`).
 
-### ¿Por qué usar esta herramienta?
+### Capacidades
 
-BloodHound proporciona el grafo, pero **BloodHound Parser extrae inteligencia accionable**. Perfecto para:
-- Triage rápido durante evaluaciones de Active Directory
-- Generación automatizada de reportes
-- Priorización de rutas de ataque en compromisos con tiempo limitado
-- Integración con otras herramientas de Red Team
+- **Kerberos**: cuentas Kerberoastables y ASREPRoastables
+- **Delegación**: sin restricciones, restringida y **RBCD** (delegación basada en recursos)
+- **Abuso de ACLs**: GenericAll, WriteDacl, WriteOwner, **AddKeyCredentialLink (Shadow
+  Credentials)**, ForceChangePassword, DCSync, ReadLAPSPassword… con **el principal resuelto
+  de SID a nombre**
+- **Higiene**: PASSWD_NOTREQD, contraseñas que nunca expiran, cuentas obsoletas,
+  **secretos en el campo `description`**, historial de SID, SO fuera de soporte, sin LAPS
+- **Tiering**: detección de objetivos de alto valor / `admin_tier_0` (los ACEs contra
+  Tier-0 suben de severidad automáticamente)
+- **Membresías recursivas** de grupos privilegiados
+- **Puntuación de riesgo** 0–100
+- **Exporta** a: txt, json, csv, markdown, **html** y **cypher** (pack para BloodHound CE)
 
-### Instalación
-
-```bash
-git clone https://github.com/mrflippermen/BloodHound-Parser.git
-cd BloodHound-Parser
-pip install -r requirements.txt
-```
-
-### Uso Básico
+### Uso rápido
 
 ```bash
-# Análisis completo
-python src/parseSharpHound.py /path/to/bloodhound/data
-
-# Exportar solo JSON
-python src/parseSharpHound.py /path/to/bloodhound -f json -o analysis.json
-
-# Exportar en todos los formatos
-python src/parseSharpHound.py /path/to/bloodhound -f all
+python src/parseSharpHound.py /ruta/al/output            # carpeta, todos los formatos
+python src/parseSharpHound.py coleccion.zip -f html -o ./reporte   # lee .zip -> HTML
+python src/parseSharpHound.py ./bh -f csv --stale-days 90
 ```
-
-### Salida de Ejemplo
-
-El análisis identifica:
-- Cuentas Kerberoastables (objetivo para roast SPN)
-- Usuarios ASREProastables (objetivo para asreproast)
-- Cuentas con delegación sin restricciones (objetivo para ataques de delegación)
-- Usuarios privilegiados (AdminCount)
 
 ---
 
-## 📋 Requirements
+## Requirements
 
 - Python 3.8+
-- pathlib (standard library)
-- dataclasses (standard library)
-
-No external dependencies required! Pure Python implementation.
+- **No external dependencies** — pure standard library.
 
 ## 🔒 Legal Disclaimer
 
-**FOR AUTHORIZED SECURITY TESTING ONLY**
-
-This tool is for authorized Active Directory security assessments only. Unauthorized access to computer systems is illegal.
-
-- ✅ Use only on networks you own or have written permission to test
-- ✅ Understand your local laws regarding penetration testing
-- ❌ The author assumes NO liability for misuse
+**FOR AUTHORIZED SECURITY TESTING ONLY.** Use only on networks you own or have written
+permission to test. The author assumes no liability for misuse. See [DISCLAIMER.md](DISCLAIMER.md).
 
 ## 📜 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).
 
 ## 👤 Author
 
-**Esteban Jiménez**
-- 🏆 Top 1 Hack The Box Ecuador
-- 🎯 Red Team Operator  
-- 💼 Active Directory Specialist
-- 🔗 [GitHub](https://github.com/virtualshoot)
+**Esteban Jiménez** — 🏆 Top 1 Hack The Box Ecuador · Red Team Operator · AD Specialist
+· [GitHub](https://github.com/mrflippermen)
 
 ## 🙏 Acknowledgments
 
-- BloodHound/SharpHound team for amazing AD analysis tools
-- Active Directory security research community
-- MITRE ATT&CK framework
+SpecterOps BloodHound/SharpHound team · the AD security research community · MITRE ATT&CK.
 
 ---
 

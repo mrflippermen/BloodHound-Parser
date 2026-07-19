@@ -13,3 +13,16 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Tool output (never commit real collection data / reports)
+*.zip
+!examples/**/*.zip
+analysis.json
+findings.csv
+report.md
+report.html
+resumen.txt
+hunting_queries.cypher
+user_names_output.txt
+computer_names_output.txt
+.pytest_cache/

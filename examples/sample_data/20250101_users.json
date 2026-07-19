@@ -1,0 +1,58 @@
+{
+  "data": [
+    {
+      "ObjectIdentifier": "S-1-5-21-1111-2222-3333-1104",
+      "Properties": {
+        "name": "SQLSERVICE@CORP.LOCAL",
+        "enabled": true,
+        "hasspn": true,
+        "serviceprincipalnames": ["MSSQLSvc/db01.corp.local:1433"],
+        "admincount": false,
+        "highvalue": false,
+        "description": "svc account - password: Summer2024!"
+      },
+      "Aces": []
+    },
+    {
+      "ObjectIdentifier": "S-1-5-21-1111-2222-3333-1105",
+      "Properties": {
+        "name": "LEGACYUSER@CORP.LOCAL",
+        "enabled": true,
+        "dontreqpreauth": true,
+        "passwordnotreqd": true,
+        "pwdneverexpires": true,
+        "unixpassword": "P@ssw0rd-in-LDAP!",
+        "lastlogontimestamp": 1500000000
+      },
+      "Aces": []
+    },
+    {
+      "ObjectIdentifier": "S-1-5-21-1111-2222-3333-1106",
+      "Properties": {
+        "name": "HELPDESK@CORP.LOCAL",
+        "enabled": true,
+        "sidhistory": ["S-1-5-21-1111-2222-3333-512"]
+      },
+      "Aces": []
+    },
+    {
+      "ObjectIdentifier": "S-1-5-21-1111-2222-3333-500",
+      "Properties": {
+        "name": "ADMINISTRATOR@CORP.LOCAL",
+        "enabled": true,
+        "admincount": true,
+        "highvalue": true,
+        "system_tags": "admin_tier_0"
+      },
+      "Aces": [
+        {
+          "PrincipalSID": "S-1-5-21-1111-2222-3333-1106",
+          "PrincipalType": "User",
+          "RightName": "ForceChangePassword",
+          "IsInherited": false
+        }
+      ]
+    }
+  ],
+  "meta": {"methods": 0, "type": "users", "count": 4, "version": 5}
+}
